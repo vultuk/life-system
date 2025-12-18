@@ -26,5 +26,8 @@ RUN if [ "$SERVICE" = "apps/web" ]; then \
       cd /app/apps/web && bun run build; \
     fi
 
-# Start script that handles both service types
-CMD ["sh", "-c", "if [ \"$SERVICE\" = \"apps/web\" ]; then cd /app/apps/web && bunx serve -s dist -l $PORT; else cd /app/${SERVICE} && bun run src/index.ts; fi"]
+# Start script that handles different service types
+# - web: serve static files
+# - mcp-server: run HTTP mode (src/http.ts)
+# - others: run standard entry point (src/index.ts)
+CMD ["sh", "-c", "if [ \"$SERVICE\" = \"apps/web\" ]; then cd /app/apps/web && bunx serve -s dist -l $PORT; elif [ \"$SERVICE\" = \"apps/mcp-server\" ]; then cd /app/${SERVICE} && bun run src/http.ts; else cd /app/${SERVICE} && bun run src/index.ts; fi"]

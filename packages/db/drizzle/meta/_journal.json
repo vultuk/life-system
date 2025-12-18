@@ -15,6 +15,13 @@
       "when": 1766067088324,
       "tag": "0001_brief_natasha_romanoff",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1766078031503,
+      "tag": "0002_empty_cerise",
+      "breakpoints": true
     }
   ]
 }

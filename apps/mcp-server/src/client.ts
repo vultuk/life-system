@@ -1,6 +1,9 @@
 /**
  * HTTP client wrapper for calling the Gateway API
+ * Supports both stdio mode (env var token) and HTTP mode (per-request token)
  */
+
+import { getUserContext } from "./auth.js";
 
 interface ApiResponse<T> {
   success: boolean;
@@ -17,22 +20,43 @@ interface PaginatedData<T> {
 
 export class GatewayClient {
   private baseUrl: string;
-  private token: string;
+  private staticToken: string | null;
 
   constructor() {
     const gatewayUrl = process.env.GATEWAY_URL;
-    const token = process.env.MCP_USER_TOKEN;
 
     if (!gatewayUrl) {
       throw new Error("GATEWAY_URL environment variable is not set");
     }
 
-    if (!token) {
-      throw new Error("MCP_USER_TOKEN environment variable is not set");
+    this.baseUrl = gatewayUrl.replace(/\/$/, ""); // Remove trailing slash
+
+    // Static token for stdio mode (optional in HTTP mode)
+    this.staticToken = process.env.MCP_USER_TOKEN || null;
+  }
+
+  /**
+   * Get the authentication token for the current request.
+   * In HTTP mode, uses the token from async local storage.
+   * In stdio mode, uses the MCP_USER_TOKEN environment variable.
+   */
+  private getToken(): string {
+    // First check async local storage for per-request token (HTTP mode)
+    const userContext = getUserContext();
+    if (userContext?.token) {
+      return userContext.token;
     }
 
-    this.baseUrl = gatewayUrl.replace(/\/$/, ""); // Remove trailing slash
-    this.token = token;
+    // Fallback to static token (stdio mode)
+    if (this.staticToken) {
+      return this.staticToken;
+    }
+
+    throw new Error(
+      "No authentication token available. " +
+      "In HTTP mode, ensure the user is authenticated. " +
+      "In stdio mode, set MCP_USER_TOKEN environment variable."
+    );
   }
 
   private async request<T>(
@@ -41,9 +65,10 @@ export class GatewayClient {
     body?: unknown
   ): Promise<T> {
     const url = `${this.baseUrl}${path}`;
+    const token = this.getToken();
 
     const headers: Record<string, string> = {
-      Authorization: `Bearer ${this.token}`,
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     };
 
