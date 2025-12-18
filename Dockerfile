@@ -2,8 +2,9 @@ FROM oven/bun:1 AS base
 WORKDIR /app
 
 # Accept build argument for which service to build (defaults to web frontend)
-# Note: SERVICE env var must be set at runtime by Railway for each service
 ARG SERVICE=apps/web
+# Bake SERVICE into the image so it's available at runtime
+ENV SERVICE=${SERVICE}
 
 # API URL for the web frontend (Vite embeds at build time)
 ARG VITE_API_URL=https://life-gateway.up.railway.app
