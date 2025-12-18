@@ -16,6 +16,7 @@ app.get("/health", (c) => {
 });
 
 // Apply user context middleware to all category routes
+app.use("/categories", userContextMiddleware());
 app.use("/categories/*", userContextMiddleware());
 
 // Mount category routes
