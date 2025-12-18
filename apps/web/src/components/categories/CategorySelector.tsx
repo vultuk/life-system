@@ -26,7 +26,7 @@ const CategorySelector = forwardRef<HTMLSelectElement, CategorySelectorProps>(
     ref
   ) => {
     const { data: categoriesResponse, isLoading } = useCategories({ limit: 100 });
-    const categories = categoriesResponse?.data ?? [];
+    const categories = categoriesResponse?.items ?? [];
 
     const inputId = id || label?.toLowerCase().replace(/\s/g, "-") || "category";
 

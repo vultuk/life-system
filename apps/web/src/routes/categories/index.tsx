@@ -26,7 +26,7 @@ function CategoriesPage() {
   const [deletingCategory, setDeletingCategory] = useState<Category | null>(null);
 
   const { data: categoriesResponse, isLoading } = useCategories({ limit: 100 });
-  const categories = categoriesResponse?.data ?? [];
+  const categories = categoriesResponse?.items ?? [];
 
   const createCategory = useCreateCategory();
   const updateCategory = useUpdateCategory();

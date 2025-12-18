@@ -9,7 +9,7 @@ interface CategoryFilterProps {
 
 export function CategoryFilter({ value, onChange, className }: CategoryFilterProps) {
   const { data: categoriesResponse, isLoading } = useCategories({ limit: 100 });
-  const categories = categoriesResponse?.data ?? [];
+  const categories = categoriesResponse?.items ?? [];
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = e.target.value;
