@@ -8,8 +8,11 @@
     "start": "bun run src/index.ts"
   },
   "dependencies": {
+    "@hono/zod-validator": "^0.4.2",
     "@life/db": "workspace:*",
     "@life/shared": "workspace:*",
-    "hono": "^4.6.14"
+    "hono": "^4.6.14",
+    "jose": "^5.9.6",
+    "zod": "^3.24.1"
   }
 }

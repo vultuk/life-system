@@ -1,0 +1,78 @@
+import { Hono } from "hono";
+import type { UserContext } from "@life/shared";
+import { authMiddleware, getUser } from "../middleware/auth";
+import { proxyRequest } from "../middleware/proxy";
+
+type TasksEnv = {
+  Variables: {
+    user: UserContext;
+  };
+};
+
+const tasksRoutes = new Hono<TasksEnv>();
+
+const getTasksServiceUrl = () => {
+  const url = process.env.TASKS_SERVICE_URL;
+  if (!url) {
+    throw new Error("TASKS_SERVICE_URL environment variable is not set");
+  }
+  return url;
+};
+
+// Apply auth middleware to all routes
+tasksRoutes.use("/*", authMiddleware());
+
+// List tasks
+tasksRoutes.get("/", async (c) => {
+  const user = getUser(c);
+  return proxyRequest(c, {
+    baseUrl: getTasksServiceUrl(),
+    path: "/tasks",
+    user,
+  });
+});
+
+// Create task
+tasksRoutes.post("/", async (c) => {
+  const user = getUser(c);
+  return proxyRequest(c, {
+    baseUrl: getTasksServiceUrl(),
+    path: "/tasks",
+    user,
+  });
+});
+
+// Get single task
+tasksRoutes.get("/:id", async (c) => {
+  const user = getUser(c);
+  const id = c.req.param("id");
+  return proxyRequest(c, {
+    baseUrl: getTasksServiceUrl(),
+    path: `/tasks/${id}`,
+    user,
+  });
+});
+
+// Update task
+tasksRoutes.put("/:id", async (c) => {
+  const user = getUser(c);
+  const id = c.req.param("id");
+  return proxyRequest(c, {
+    baseUrl: getTasksServiceUrl(),
+    path: `/tasks/${id}`,
+    user,
+  });
+});
+
+// Delete task
+tasksRoutes.delete("/:id", async (c) => {
+  const user = getUser(c);
+  const id = c.req.param("id");
+  return proxyRequest(c, {
+    baseUrl: getTasksServiceUrl(),
+    path: `/tasks/${id}`,
+    user,
+  });
+});
+
+export { tasksRoutes };

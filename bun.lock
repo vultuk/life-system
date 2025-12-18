@@ -12,9 +12,12 @@
       "name": "@life/gateway",
       "version": "0.0.1",
       "dependencies": {
+        "@hono/zod-validator": "^0.4.2",
         "@life/db": "workspace:*",
         "@life/shared": "workspace:*",
         "hono": "^4.6.14",
+        "jose": "^5.9.6",
+        "zod": "^3.24.1",
       },
     },
     "apps/mcp-server": {
@@ -60,6 +63,7 @@
         "@life/db": "workspace:*",
         "@life/shared": "workspace:*",
         "hono": "^4.6.14",
+        "zod": "^3.24.1",
       },
     },
     "apps/web": {
@@ -142,6 +146,8 @@
 
     "@esbuild/win32-x64": ["@esbuild/win32-x64@0.19.12", "", { "os": "win32", "cpu": "x64" }, "sha512-T1QyPSDCyMXaO3pzBkF96E8xMkiRYbUEZADd29SyPGabqxMViNoii+NcK7eWJAEoU6RZyEm5lVSIjTmcdoB9HA=="],
 
+    "@hono/zod-validator": ["@hono/zod-validator@0.4.3", "", { "peerDependencies": { "hono": ">=3.9.0", "zod": "^3.19.1" } }, "sha512-xIgMYXDyJ4Hj6ekm9T9Y27s080Nl9NXHcJkOvkXPhubOLj8hZkOL8pDnnXfvCf5xEE8Q4oMFenQUZZREUY2gqQ=="],
+
     "@life/db": ["@life/db@workspace:packages/db"],
 
     "@life/gateway": ["@life/gateway@workspace:apps/gateway"],
@@ -189,6 +195,8 @@
     "hono": ["hono@4.11.1", "", {}, "sha512-KsFcH0xxHes0J4zaQgWbYwmz3UPOOskdqZmItstUG93+Wk1ePBLkLGwbP9zlmh1BFUiL8Qp+Xfu9P7feJWpGNg=="],
 
     "isexe": ["isexe@3.1.1", "", {}, "sha512-LpB/54B+/2J5hqQ7imZHfdU31OlgQqx7ZicVlkm9kzg9/w8GKLEcFfJl/t7DCEDueOyBAD6zCCwTO6Fzs0NoEQ=="],
+
+    "jose": ["jose@5.10.0", "", {}, "sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg=="],
 
     "ms": ["ms@2.1.3", "", {}, "sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA=="],
 

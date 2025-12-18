@@ -1,17 +1,27 @@
 import { z } from "zod";
+import type { ApiResponse } from "../types";
 
-// Common Zod schemas shared across services
-
-export const uuidSchema = z.string().uuid();
+export const userContextSchema = z.object({
+  userId: z.string().uuid(),
+  email: z.string().email(),
+});
 
 export const paginationSchema = z.object({
-  page: z.number().int().positive().default(1),
-  limit: z.number().int().positive().max(100).default(20),
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(20),
 });
 
-export const timestampsSchema = z.object({
-  createdAt: z.date(),
-  updatedAt: z.date(),
+export const uuidParamSchema = z.object({
+  id: z.string().uuid(),
 });
 
-// Add more shared schemas here as needed
+export type UserContextInput = z.infer<typeof userContextSchema>;
+export type PaginationInput = z.infer<typeof paginationSchema>;
+
+export function createApiResponse<T>(data: T): ApiResponse<T> {
+  return { success: true, data };
+}
+
+export function createApiErrorResponse(error: string): ApiResponse<never> {
+  return { success: false, error };
+}
