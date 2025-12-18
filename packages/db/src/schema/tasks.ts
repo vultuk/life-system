@@ -4,6 +4,7 @@ import {
   timestamp,
   uuid,
   pgEnum,
+  date,
 } from "drizzle-orm/pg-core";
 import { users } from "./users";
 
@@ -14,9 +15,11 @@ export const taskStatusEnum = pgEnum("task_status", [
 ]);
 
 export const taskPriorityEnum = pgEnum("task_priority", [
-  "low",
-  "medium",
-  "high",
+  "Lowest",
+  "Low",
+  "Normal",
+  "High",
+  "Very high",
 ]);
 
 export const tasks = pgTable("tasks", {
@@ -27,8 +30,11 @@ export const tasks = pgTable("tasks", {
   title: text("title").notNull(),
   description: text("description"),
   status: taskStatusEnum("status").notNull().default("todo"),
-  priority: taskPriorityEnum("priority").notNull().default("medium"),
-  dueDate: timestamp("due_date", { withTimezone: true }),
+  priority: taskPriorityEnum("priority").notNull().default("Normal"),
+  deadline: date("deadline", { mode: "string" }),
+  deadlineTime: text("deadline_time"),
+  scheduledStart: timestamp("scheduled_start", { withTimezone: true }),
+  scheduledFinish: timestamp("scheduled_finish", { withTimezone: true }),
   completedAt: timestamp("completed_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()

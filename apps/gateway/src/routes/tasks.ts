@@ -75,4 +75,78 @@ tasksRoutes.delete("/:id", async (c) => {
   });
 });
 
+// --- Note linking routes ---
+
+// Get linked notes
+tasksRoutes.get("/:id/notes", async (c) => {
+  const user = getUser(c);
+  const id = c.req.param("id");
+  return proxyRequest(c, {
+    baseUrl: getTasksServiceUrl(),
+    path: `/tasks/${id}/notes`,
+    user,
+  });
+});
+
+// Link note to task
+tasksRoutes.post("/:id/notes/:noteId", async (c) => {
+  const user = getUser(c);
+  const id = c.req.param("id");
+  const noteId = c.req.param("noteId");
+  return proxyRequest(c, {
+    baseUrl: getTasksServiceUrl(),
+    path: `/tasks/${id}/notes/${noteId}`,
+    user,
+  });
+});
+
+// Unlink note from task
+tasksRoutes.delete("/:id/notes/:noteId", async (c) => {
+  const user = getUser(c);
+  const id = c.req.param("id");
+  const noteId = c.req.param("noteId");
+  return proxyRequest(c, {
+    baseUrl: getTasksServiceUrl(),
+    path: `/tasks/${id}/notes/${noteId}`,
+    user,
+  });
+});
+
+// --- Contact linking routes ---
+
+// Get linked contacts
+tasksRoutes.get("/:id/contacts", async (c) => {
+  const user = getUser(c);
+  const id = c.req.param("id");
+  return proxyRequest(c, {
+    baseUrl: getTasksServiceUrl(),
+    path: `/tasks/${id}/contacts`,
+    user,
+  });
+});
+
+// Link contact to task
+tasksRoutes.post("/:id/contacts/:contactId", async (c) => {
+  const user = getUser(c);
+  const id = c.req.param("id");
+  const contactId = c.req.param("contactId");
+  return proxyRequest(c, {
+    baseUrl: getTasksServiceUrl(),
+    path: `/tasks/${id}/contacts/${contactId}`,
+    user,
+  });
+});
+
+// Unlink contact from task
+tasksRoutes.delete("/:id/contacts/:contactId", async (c) => {
+  const user = getUser(c);
+  const id = c.req.param("id");
+  const contactId = c.req.param("contactId");
+  return proxyRequest(c, {
+    baseUrl: getTasksServiceUrl(),
+    path: `/tasks/${id}/contacts/${contactId}`,
+    user,
+  });
+});
+
 export { tasksRoutes };

@@ -18,6 +18,14 @@ import {
   updateTask,
   deleteTask,
 } from "../services/tasks";
+import {
+  linkNoteToTask,
+  unlinkNoteFromTask,
+  getTaskNotes,
+  linkContactToTask,
+  unlinkContactFromTask,
+  getTaskContacts,
+} from "../services/taskLinks";
 
 type TasksEnv = {
   Variables: {
@@ -44,7 +52,12 @@ taskRoutes.get("/", async (c) => {
 
   return c.json(
     createApiResponse(
-      createPaginatedResponse(result.items, result.total, result.page, result.limit)
+      createPaginatedResponse(
+        result.items,
+        result.total,
+        result.page,
+        result.limit
+      )
     )
   );
 });
@@ -104,6 +117,74 @@ taskRoutes.delete("/:id", async (c) => {
   await deleteTask(user.userId, id);
 
   return c.json(createApiResponse({ deleted: true }));
+});
+
+// --- Note linking routes ---
+
+// Get linked notes
+taskRoutes.get("/:id/notes", async (c) => {
+  const user = getUser(c);
+  const taskId = c.req.param("id");
+
+  const linkedNotes = await getTaskNotes(user.userId, taskId);
+
+  return c.json(createApiResponse(linkedNotes));
+});
+
+// Link note to task
+taskRoutes.post("/:id/notes/:noteId", async (c) => {
+  const user = getUser(c);
+  const taskId = c.req.param("id");
+  const noteId = c.req.param("noteId");
+
+  const link = await linkNoteToTask(user.userId, taskId, noteId);
+
+  return c.json(createApiResponse(link), 201);
+});
+
+// Unlink note from task
+taskRoutes.delete("/:id/notes/:noteId", async (c) => {
+  const user = getUser(c);
+  const taskId = c.req.param("id");
+  const noteId = c.req.param("noteId");
+
+  await unlinkNoteFromTask(user.userId, taskId, noteId);
+
+  return c.json(createApiResponse({ unlinked: true }));
+});
+
+// --- Contact linking routes ---
+
+// Get linked contacts
+taskRoutes.get("/:id/contacts", async (c) => {
+  const user = getUser(c);
+  const taskId = c.req.param("id");
+
+  const linkedContacts = await getTaskContacts(user.userId, taskId);
+
+  return c.json(createApiResponse(linkedContacts));
+});
+
+// Link contact to task
+taskRoutes.post("/:id/contacts/:contactId", async (c) => {
+  const user = getUser(c);
+  const taskId = c.req.param("id");
+  const contactId = c.req.param("contactId");
+
+  const link = await linkContactToTask(user.userId, taskId, contactId);
+
+  return c.json(createApiResponse(link), 201);
+});
+
+// Unlink contact from task
+taskRoutes.delete("/:id/contacts/:contactId", async (c) => {
+  const user = getUser(c);
+  const taskId = c.req.param("id");
+  const contactId = c.req.param("contactId");
+
+  await unlinkContactFromTask(user.userId, taskId, contactId);
+
+  return c.json(createApiResponse({ unlinked: true }));
 });
 
 export { taskRoutes };

@@ -7,6 +7,8 @@ import type {
   TaskQueryInput,
 } from "../schemas/tasks";
 
+const DEFAULT_DEADLINE_TIME = "09:00";
+
 export interface TasksListResult {
   items: Task[];
   total: number;
@@ -41,10 +43,7 @@ export async function listTasks(
       .orderBy(desc(tasks.createdAt))
       .limit(limit)
       .offset(offset),
-    db
-      .select({ count: count() })
-      .from(tasks)
-      .where(whereClause),
+    db.select({ count: count() }).from(tasks).where(whereClause),
   ]);
 
   return {
@@ -85,7 +84,16 @@ export async function createTask(
     title: input.title,
     description: input.description,
     priority: input.priority,
-    dueDate: input.dueDate ? new Date(input.dueDate) : null,
+    deadline: input.deadline ?? null,
+    deadlineTime: input.deadline
+      ? input.deadlineTime ?? DEFAULT_DEADLINE_TIME
+      : null,
+    scheduledStart: input.scheduledStart
+      ? new Date(input.scheduledStart)
+      : null,
+    scheduledFinish: input.scheduledFinish
+      ? new Date(input.scheduledFinish)
+      : null,
   };
 
   const [task] = await db.insert(tasks).values(newTask).returning();
@@ -129,8 +137,28 @@ export async function updateTask(
     updates.priority = input.priority;
   }
 
-  if (input.dueDate !== undefined) {
-    updates.dueDate = input.dueDate ? new Date(input.dueDate) : null;
+  if (input.deadline !== undefined) {
+    updates.deadline = input.deadline;
+    // Set default deadline time if deadline is set but time is not provided
+    if (input.deadline && input.deadlineTime === undefined) {
+      updates.deadlineTime = existing.deadlineTime ?? DEFAULT_DEADLINE_TIME;
+    }
+  }
+
+  if (input.deadlineTime !== undefined) {
+    updates.deadlineTime = input.deadlineTime;
+  }
+
+  if (input.scheduledStart !== undefined) {
+    updates.scheduledStart = input.scheduledStart
+      ? new Date(input.scheduledStart)
+      : null;
+  }
+
+  if (input.scheduledFinish !== undefined) {
+    updates.scheduledFinish = input.scheduledFinish
+      ? new Date(input.scheduledFinish)
+      : null;
   }
 
   const [task] = await db

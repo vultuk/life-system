@@ -1,19 +1,40 @@
 import { Link } from "@tanstack/react-router";
 import { Card, CardContent } from "~/components/ui/Card";
 import { Badge } from "~/components/ui/Badge";
-import type { Task } from "~/api/tasks";
-import { formatDate, isOverdue, isDueToday } from "~/utils/dates";
+import type { Task, TaskPriority } from "~/api/tasks";
+import { formatDate } from "~/utils/dates";
 
 interface TaskCardProps {
   task: Task;
 }
 
+function isDeadlineOverdue(deadline: string | null): boolean {
+  if (!deadline) return false;
+  const deadlineDate = new Date(deadline);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return deadlineDate < today;
+}
+
+function isDeadlineToday(deadline: string | null): boolean {
+  if (!deadline) return false;
+  const deadlineDate = new Date(deadline);
+  const today = new Date();
+  return (
+    deadlineDate.getDate() === today.getDate() &&
+    deadlineDate.getMonth() === today.getMonth() &&
+    deadlineDate.getFullYear() === today.getFullYear()
+  );
+}
+
 export function TaskCard({ task }: TaskCardProps) {
-  const priorityVariants = {
-    low: "default",
-    medium: "warning",
-    high: "danger",
-  } as const;
+  const priorityVariants: Record<TaskPriority, "default" | "warning" | "danger" | "success"> = {
+    Lowest: "default",
+    Low: "default",
+    Normal: "warning",
+    High: "danger",
+    "Very high": "danger",
+  };
 
   const statusLabels = {
     todo: "To Do",
@@ -21,8 +42,8 @@ export function TaskCard({ task }: TaskCardProps) {
     done: "Done",
   };
 
-  const overdue = task.status !== "done" && isOverdue(task.dueDate);
-  const dueToday = task.status !== "done" && isDueToday(task.dueDate);
+  const overdue = task.status !== "done" && isDeadlineOverdue(task.deadline);
+  const dueToday = task.status !== "done" && isDeadlineToday(task.deadline);
 
   return (
     <Link to="/tasks/$taskId" params={{ taskId: task.id }}>
@@ -51,7 +72,7 @@ export function TaskCard({ task }: TaskCardProps) {
               {statusLabels[task.status]}
             </Badge>
 
-            {task.dueDate && (
+            {task.deadline && (
               <span
                 className={
                   overdue
@@ -62,10 +83,17 @@ export function TaskCard({ task }: TaskCardProps) {
                 }
               >
                 {overdue ? "Overdue: " : dueToday ? "Due today" : "Due: "}
-                {!dueToday && formatDate(task.dueDate)}
+                {!dueToday && formatDate(task.deadline)}
+                {task.deadlineTime && ` at ${task.deadlineTime}`}
               </span>
             )}
           </div>
+
+          {task.scheduledStart && (
+            <div className="mt-2 text-xs text-gray-400 dark:text-gray-500">
+              Scheduled: {new Date(task.scheduledStart).toLocaleString()}
+            </div>
+          )}
         </CardContent>
       </Card>
     </Link>
