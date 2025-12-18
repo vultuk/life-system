@@ -34,4 +34,7 @@ RUN if [ "$SERVICE" = "apps/web" ]; then \
 # - web: serve static files
 # - mcp-server: run HTTP mode (src/http.ts)
 # - others: run standard entry point (src/index.ts)
-CMD ["sh", "-c", "echo \"SERVICE env var: $SERVICE\" && if [ \"$SERVICE\" = \"apps/web\" ]; then cd /app/apps/web && bunx serve -s dist -l $PORT; elif [ \"$SERVICE\" = \"apps/mcp-server\" ]; then cd /app/${SERVICE} && bun run src/http.ts; else echo \"Starting $SERVICE\" && cd /app/${SERVICE} && bun run src/index.ts; fi"]
+#
+# IMPORTANT: The $SERVICE env var is baked in at build time from the ARG.
+# Railway passes SERVICE as a build arg for each service.
+CMD ["sh", "-c", "echo \"=== DEBUG: SERVICE=$SERVICE ===\"; if [ \"$SERVICE\" = \"apps/web\" ]; then cd /app/apps/web && bunx serve -s dist -l $PORT; elif [ \"$SERVICE\" = \"apps/mcp-server\" ]; then cd /app/${SERVICE} && bun run src/http.ts; else echo \"=== Starting $SERVICE ===\"; cd /app/${SERVICE} && bun run src/index.ts; fi"]
