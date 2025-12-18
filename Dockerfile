@@ -6,7 +6,7 @@ ARG SERVICE
 ENV SERVICE=${SERVICE}
 
 # Copy all workspace files
-COPY package.json bun.lockb ./
+COPY package.json bun.lock ./
 COPY packages ./packages
 COPY apps ./apps
 COPY tsconfig.json ./
