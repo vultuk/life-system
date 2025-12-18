@@ -1,8 +1,8 @@
 FROM oven/bun:1 AS base
 WORKDIR /app
 
-# Accept build argument for which service to build
-ARG SERVICE
+# Accept build argument for which service to build (defaults to web frontend)
+ARG SERVICE=apps/web
 ENV SERVICE=${SERVICE}
 
 # Copy all workspace files
