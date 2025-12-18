@@ -6,7 +6,7 @@ ARG SERVICE=apps/web
 ENV SERVICE=${SERVICE}
 
 # API URL for the web frontend (Vite embeds at build time)
-ARG VITE_API_URL=http://gateway:8080
+ARG VITE_API_URL=https://life-gateway.up.railway.app
 ENV VITE_API_URL=${VITE_API_URL}
 
 # Copy all workspace files
