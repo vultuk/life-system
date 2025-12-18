@@ -6,3 +6,4 @@ export { habitsRoutes } from "./habits";
 export { categoriesRoutes } from "./categories";
 export { oauthRoutes } from "./oauth";
 export { carddavRoutes } from "./carddav";
+export { mcpRoutes } from "./mcp";

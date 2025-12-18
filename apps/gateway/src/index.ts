@@ -6,7 +6,7 @@ import {
   AppError,
   createApiErrorResponse,
 } from "@life/shared";
-import { authRoutes, tasksRoutes, contactsRoutes, notesRoutes, habitsRoutes, categoriesRoutes, oauthRoutes, carddavRoutes } from "./routes";
+import { authRoutes, tasksRoutes, contactsRoutes, notesRoutes, habitsRoutes, categoriesRoutes, oauthRoutes, carddavRoutes, mcpRoutes } from "./routes";
 
 const app = new Hono();
 
@@ -17,7 +17,8 @@ app.use(
   cors({
     origin: "*",
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PROPFIND", "REPORT", "HEAD"],
-    allowHeaders: ["Content-Type", "Authorization", "Depth", "If-Match", "If-None-Match"],
+    allowHeaders: ["Content-Type", "Authorization", "Depth", "If-Match", "If-None-Match", "mcp-session-id", "mcp-protocol-version"],
+    exposeHeaders: ["mcp-session-id"],
   })
 );
 
@@ -37,6 +38,21 @@ app.on("PROPFIND", "/.well-known/caldav", (c) => c.notFound());
 
 // CardDAV routes (no gateway auth - service handles Basic Auth)
 app.route("/carddav", carddavRoutes);
+
+// MCP routes (no gateway auth - service handles Bearer token auth)
+app.route("/mcp", mcpRoutes);
+
+// MCP OAuth Protected Resource Metadata
+app.get("/.well-known/oauth-protected-resource", (c) => {
+  const gatewayUrl = process.env.GATEWAY_URL || `http://localhost:${process.env.PORT || 3000}`;
+  return c.json({
+    resource: gatewayUrl,
+    authorization_servers: [gatewayUrl],
+    scopes_supported: ["openid", "profile", "tasks", "contacts", "notes", "habits"],
+    bearer_methods_supported: ["header"],
+    resource_name: "Life System MCP Server",
+  });
+});
 
 // Mount routes
 app.route("/auth", authRoutes);
