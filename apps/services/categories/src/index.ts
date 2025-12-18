@@ -153,7 +153,7 @@ app.notFound((c) => {
 
 const port = Number(process.env.PORT) || 3006;
 
-console.log(`Categories service running on port ${port}`);
+console.log(`Categories service v2 running on port ${port}`);
 
 export default {
   port,
