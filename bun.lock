@@ -30,6 +30,16 @@
         "zod": "^3.24.1",
       },
     },
+    "apps/services/carddav": {
+      "name": "@life/service-carddav",
+      "version": "0.0.1",
+      "dependencies": {
+        "@life/db": "workspace:*",
+        "@life/shared": "workspace:*",
+        "hono": "^4.6.14",
+        "zod": "^3.24.1",
+      },
+    },
     "apps/services/categories": {
       "name": "@life/service-categories",
       "version": "0.0.1",
@@ -268,6 +278,8 @@
     "@life/gateway": ["@life/gateway@workspace:apps/gateway"],
 
     "@life/mcp-server": ["@life/mcp-server@workspace:apps/mcp-server"],
+
+    "@life/service-carddav": ["@life/service-carddav@workspace:apps/services/carddav"],
 
     "@life/service-categories": ["@life/service-categories@workspace:apps/services/categories"],
 

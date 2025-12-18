@@ -6,7 +6,7 @@ import {
   AppError,
   createApiErrorResponse,
 } from "@life/shared";
-import { authRoutes, tasksRoutes, contactsRoutes, notesRoutes, habitsRoutes, categoriesRoutes, oauthRoutes } from "./routes";
+import { authRoutes, tasksRoutes, contactsRoutes, notesRoutes, habitsRoutes, categoriesRoutes, oauthRoutes, carddavRoutes } from "./routes";
 
 const app = new Hono();
 
@@ -16,8 +16,8 @@ app.use(
   "*",
   cors({
     origin: "*",
-    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowHeaders: ["Content-Type", "Authorization"],
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PROPFIND", "REPORT", "HEAD"],
+    allowHeaders: ["Content-Type", "Authorization", "Depth", "If-Match", "If-None-Match"],
   })
 );
 
@@ -25,6 +25,18 @@ app.use(
 app.get("/health", (c) => {
   return c.json({ status: "ok", service: "gateway" });
 });
+
+// CardDAV well-known discovery endpoints (RFC 6764)
+// These must be handled BEFORE other routes and WITHOUT auth
+app.get("/.well-known/carddav", (c) => c.redirect("/carddav/", 301));
+app.on("PROPFIND", "/.well-known/carddav", (c) => c.redirect("/carddav/", 301));
+
+// CalDAV well-known returns 404 (we don't support calendars)
+app.get("/.well-known/caldav", (c) => c.notFound());
+app.on("PROPFIND", "/.well-known/caldav", (c) => c.notFound());
+
+// CardDAV routes (no gateway auth - service handles Basic Auth)
+app.route("/carddav", carddavRoutes);
 
 // Mount routes
 app.route("/auth", authRoutes);

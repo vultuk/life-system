@@ -1,0 +1,9 @@
+# Railway configuration
+# Note: Each service needs its own start command based on the SERVICE env var
+
+[build]
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
+
+# No startCommand here - let Dockerfile CMD handle it
+# The SERVICE env var determines which service to run
