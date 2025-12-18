@@ -34,4 +34,4 @@ RUN if [ "$SERVICE" = "apps/web" ]; then \
 # - web: serve static files
 # - mcp-server: run HTTP mode (src/http.ts)
 # - others: run standard entry point (src/index.ts)
-CMD ["sh", "-c", "if [ \"$SERVICE\" = \"apps/web\" ]; then cd /app/apps/web && bunx serve -s dist -l $PORT; elif [ \"$SERVICE\" = \"apps/mcp-server\" ]; then cd /app/${SERVICE} && bun run src/http.ts; else cd /app/${SERVICE} && bun run src/index.ts; fi"]
+CMD ["sh", "-c", "echo \"SERVICE env var: $SERVICE\" && if [ \"$SERVICE\" = \"apps/web\" ]; then cd /app/apps/web && bunx serve -s dist -l $PORT; elif [ \"$SERVICE\" = \"apps/mcp-server\" ]; then cd /app/${SERVICE} && bun run src/http.ts; else echo \"Starting $SERVICE\" && cd /app/${SERVICE} && bun run src/index.ts; fi"]
