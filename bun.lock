@@ -62,6 +62,14 @@
         "hono": "^4.6.14",
       },
     },
+    "apps/web": {
+      "name": "@life/web",
+      "version": "0.0.1",
+      "dependencies": {
+        "@life/shared": "workspace:*",
+        "hono": "^4.6.14",
+      },
+    },
     "packages/db": {
       "name": "@life/db",
       "version": "0.0.1",
@@ -149,6 +157,8 @@
     "@life/service-tasks": ["@life/service-tasks@workspace:apps/services/tasks"],
 
     "@life/shared": ["@life/shared@workspace:packages/shared"],
+
+    "@life/web": ["@life/web@workspace:apps/web"],
 
     "@petamoriken/float16": ["@petamoriken/float16@3.9.3", "", {}, "sha512-8awtpHXCx/bNpFt4mt2xdkgtgVvKqty8VbjHI/WWWQuEw+KLzFot3f4+LkQY9YmOtq7A5GdOnqoIC8Pdygjk2g=="],
 
