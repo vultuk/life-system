@@ -5,6 +5,10 @@ WORKDIR /app
 ARG SERVICE=apps/web
 ENV SERVICE=${SERVICE}
 
+# API URL for the web frontend (Vite embeds at build time)
+ARG VITE_API_URL=http://gateway:8080
+ENV VITE_API_URL=${VITE_API_URL}
+
 # Copy all workspace files
 COPY package.json bun.lock ./
 COPY packages ./packages
