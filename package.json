@@ -1,0 +1,20 @@
+{
+  "name": "life-system",
+  "version": "0.0.1",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "apps/services/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "db:generate": "bun run --filter @life/db generate",
+    "db:migrate": "bun run --filter @life/db migrate",
+    "db:push": "bun run --filter @life/db push",
+    "db:studio": "bun run --filter @life/db studio"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.7.2"
+  }
+}

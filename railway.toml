@@ -1,0 +1,78 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10
+
+[[services]]
+name = "gateway"
+root = "apps/gateway"
+[services.build]
+buildCommand = "cd ../.. && bun install"
+[services.deploy]
+startCommand = "bun run src/index.ts"
+[[services.deploy.watchPatterns]]
+path = "apps/gateway/**"
+[[services.deploy.watchPatterns]]
+path = "packages/**"
+
+[[services]]
+name = "contacts"
+root = "apps/services/contacts"
+[services.build]
+buildCommand = "cd ../../.. && bun install"
+[services.deploy]
+startCommand = "bun run src/index.ts"
+[[services.deploy.watchPatterns]]
+path = "apps/services/contacts/**"
+[[services.deploy.watchPatterns]]
+path = "packages/**"
+
+[[services]]
+name = "tasks"
+root = "apps/services/tasks"
+[services.build]
+buildCommand = "cd ../../.. && bun install"
+[services.deploy]
+startCommand = "bun run src/index.ts"
+[[services.deploy.watchPatterns]]
+path = "apps/services/tasks/**"
+[[services.deploy.watchPatterns]]
+path = "packages/**"
+
+[[services]]
+name = "notes"
+root = "apps/services/notes"
+[services.build]
+buildCommand = "cd ../../.. && bun install"
+[services.deploy]
+startCommand = "bun run src/index.ts"
+[[services.deploy.watchPatterns]]
+path = "apps/services/notes/**"
+[[services.deploy.watchPatterns]]
+path = "packages/**"
+
+[[services]]
+name = "habits"
+root = "apps/services/habits"
+[services.build]
+buildCommand = "cd ../../.. && bun install"
+[services.deploy]
+startCommand = "bun run src/index.ts"
+[[services.deploy.watchPatterns]]
+path = "apps/services/habits/**"
+[[services.deploy.watchPatterns]]
+path = "packages/**"
+
+[[services]]
+name = "mcp-server"
+root = "apps/mcp-server"
+[services.build]
+buildCommand = "cd ../.. && bun install"
+[services.deploy]
+startCommand = "bun run src/index.ts"
+[[services.deploy.watchPatterns]]
+path = "apps/mcp-server/**"
+[[services.deploy.watchPatterns]]
+path = "packages/**"
