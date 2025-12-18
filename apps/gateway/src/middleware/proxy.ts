@@ -49,20 +49,36 @@ export async function proxyRequest(
     }
   }
 
-  const response = await fetch(url.toString(), {
-    method,
-    headers,
-    body: body || undefined,
-  });
+  try {
+    console.log(`Proxying ${method} request to: ${url.toString()}`);
 
-  // Return the proxied response
-  const responseBody = await response.text();
-  return new Response(responseBody, {
-    status: response.status,
-    headers: {
-      "Content-Type": response.headers.get("Content-Type") || "application/json",
-    },
-  });
+    const response = await fetch(url.toString(), {
+      method,
+      headers,
+      body: body || undefined,
+    });
+
+    // Return the proxied response
+    const responseBody = await response.text();
+    return new Response(responseBody, {
+      status: response.status,
+      headers: {
+        "Content-Type": response.headers.get("Content-Type") || "application/json",
+      },
+    });
+  } catch (error) {
+    console.error(`Proxy error to ${url.toString()}:`, error);
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: `Failed to connect to upstream service: ${error instanceof Error ? error.message : 'Unknown error'}`
+      }),
+      {
+        status: 502,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
 }
 
 export function createProxyHandler(serviceUrl: string, pathPrefix: string = "") {
