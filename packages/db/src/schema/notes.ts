@@ -8,6 +8,7 @@ export const notes = pgTable("notes", {
     .references(() => users.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
   content: text("content"),
+  tags: text("tags").array(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

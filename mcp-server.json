@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "life-system": {
+      "command": "bun",
+      "args": ["run", "apps/mcp-server/src/index.ts"],
+      "env": {
+        "GATEWAY_URL": "https://your-gateway-url.railway.app",
+        "MCP_USER_TOKEN": "your-jwt-token-here"
+      }
+    }
+  }
+}

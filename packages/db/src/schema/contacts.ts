@@ -9,6 +9,8 @@ export const contacts = pgTable("contacts", {
   name: text("name").notNull(),
   email: text("email"),
   phone: text("phone"),
+  relationship: text("relationship"),
+  notes: text("notes"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

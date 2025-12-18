@@ -6,7 +6,7 @@ import {
   AppError,
   createApiErrorResponse,
 } from "@life/shared";
-import { authRoutes, tasksRoutes } from "./routes";
+import { authRoutes, tasksRoutes, contactsRoutes, notesRoutes, habitsRoutes } from "./routes";
 
 const app = new Hono();
 
@@ -29,6 +29,9 @@ app.get("/health", (c) => {
 // Mount routes
 app.route("/auth", authRoutes);
 app.route("/tasks", tasksRoutes);
+app.route("/contacts", contactsRoutes);
+app.route("/notes", notesRoutes);
+app.route("/habits", habitsRoutes);
 
 // Global error handler
 app.onError((err, c) => {
