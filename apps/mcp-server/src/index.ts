@@ -10,7 +10,7 @@ app.get("/health", (c) => {
   return c.json({ status: "ok", service: "mcp-server" });
 });
 
-const port = Number(process.env.MCP_SERVER_PORT) || 3005;
+const port = Number(process.env.PORT) || 3005;
 
 console.log(`MCP Server running on port ${port}`);
 

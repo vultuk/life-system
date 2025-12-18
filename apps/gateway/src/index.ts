@@ -10,7 +10,7 @@ app.get("/health", (c) => {
   return c.json({ status: "ok", service: "gateway" });
 });
 
-const port = Number(process.env.GATEWAY_PORT) || 3000;
+const port = Number(process.env.PORT) || 3000;
 
 console.log(`Gateway running on port ${port}`);
 
