@@ -17,5 +17,10 @@ RUN bun install --frozen-lockfile
 # Railway injects PORT env var
 ENV PORT=3000
 
-# Start the specified service
-CMD ["sh", "-c", "cd /app/${SERVICE} && bun run src/index.ts"]
+# Build the web frontend if SERVICE is apps/web
+RUN if [ "$SERVICE" = "apps/web" ]; then \
+      cd /app/apps/web && bun run build; \
+    fi
+
+# Start script that handles both service types
+CMD ["sh", "-c", "if [ \"$SERVICE\" = \"apps/web\" ]; then cd /app/apps/web && bunx serve -s dist -l $PORT; else cd /app/${SERVICE} && bun run src/index.ts; fi"]
