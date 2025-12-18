@@ -2,12 +2,14 @@ import { taskTools } from "./tasks";
 import { contactTools } from "./contacts";
 import { noteTools } from "./notes";
 import { habitTools } from "./habits";
+import { categoryTools } from "./categories";
 
 // Re-export individual tool collections
 export { taskTools } from "./tasks";
 export { contactTools } from "./contacts";
 export { noteTools } from "./notes";
 export { habitTools } from "./habits";
+export { categoryTools } from "./categories";
 
 // Combine all tools
 export const allTools = [
@@ -15,6 +17,7 @@ export const allTools = [
   ...contactTools,
   ...noteTools,
   ...habitTools,
+  ...categoryTools,
 ];
 
 // Tool type definition

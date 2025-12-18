@@ -1,4 +1,5 @@
 export * from "./users";
+export * from "./categories";
 export * from "./contacts";
 export * from "./tasks";
 export * from "./taskLinks";

@@ -5,6 +5,7 @@ import { getClient, type PaginatedData } from "../client";
 interface Contact {
   id: string;
   userId: string;
+  categoryId: string | null;
   name: string;
   email: string | null;
   phone: string | null;
@@ -17,6 +18,7 @@ interface Contact {
 // Schemas
 const listContactsSchema = z.object({
   search: z.string().optional(),
+  categoryId: z.string().uuid().optional(),
   page: z.number().int().positive().optional(),
   limit: z.number().int().positive().max(100).optional(),
 });
@@ -27,6 +29,7 @@ const createContactSchema = z.object({
   phone: z.string().optional(),
   relationship: z.string().optional(),
   notes: z.string().optional(),
+  categoryId: z.string().uuid().optional(),
 });
 
 const getContactSchema = z.object({
@@ -40,6 +43,7 @@ const updateContactSchema = z.object({
   phone: z.string().nullable().optional(),
   relationship: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
+  categoryId: z.string().uuid().nullable().optional(),
 });
 
 const deleteContactSchema = z.object({
@@ -58,6 +62,10 @@ export const contactTools = [
           type: "string",
           description: "Search contacts by name, email, or phone",
         },
+        categoryId: {
+          type: "string",
+          description: "Filter by category ID (UUID)",
+        },
         page: {
           type: "number",
           description: "Page number (default: 1)",
@@ -73,6 +81,7 @@ export const contactTools = [
       const client = getClient();
       const result = await client.get<PaginatedData<Contact>>("/contacts", {
         search: input.search,
+        categoryId: input.categoryId,
         page: input.page,
         limit: input.limit,
       });
@@ -111,6 +120,10 @@ export const contactTools = [
         notes: {
           type: "string",
           description: "Additional notes about this contact",
+        },
+        categoryId: {
+          type: "string",
+          description: "Category ID (UUID) to assign the contact to",
         },
       },
       required: ["name"],
@@ -185,6 +198,10 @@ export const contactTools = [
         notes: {
           type: "string",
           description: "New notes (null to clear)",
+        },
+        categoryId: {
+          type: "string",
+          description: "New category ID (UUID) (null to clear)",
         },
       },
       required: ["id"],

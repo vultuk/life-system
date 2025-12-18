@@ -6,6 +6,7 @@ import { Input } from "~/components/ui/Input";
 import { Badge } from "~/components/ui/Badge";
 import { Loading } from "~/components/ui/Spinner";
 import { NoteList } from "~/components/notes/NoteList";
+import { CategoryFilter } from "~/components/categories/CategoryFilter";
 import { useNotes } from "~/hooks/useNotes";
 import { cn } from "~/utils/cn";
 
@@ -17,11 +18,13 @@ function NotesPage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [categoryId, setCategoryId] = useState<string | undefined>(undefined);
   const [page, setPage] = useState(1);
 
   const { data, isLoading } = useNotes({
     search: search || undefined,
     tag: selectedTag || undefined,
+    categoryId,
     page,
     limit: 12,
   });
@@ -45,15 +48,24 @@ function NotesPage() {
       />
 
       <div className="mb-6 space-y-4">
-        <Input
-          placeholder="Search notes..."
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1);
-          }}
-          className="max-w-md"
-        />
+        <div className="flex gap-4 items-center">
+          <Input
+            placeholder="Search notes..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            className="max-w-md"
+          />
+          <CategoryFilter
+            value={categoryId}
+            onChange={(id) => {
+              setCategoryId(id);
+              setPage(1);
+            }}
+          />
+        </div>
 
         {allTags.size > 0 && (
           <div className="flex flex-wrap gap-2">

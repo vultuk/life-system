@@ -5,6 +5,7 @@ import { getClient, type PaginatedData } from "../client";
 interface Task {
   id: string;
   userId: string;
+  categoryId: string | null;
   title: string;
   description: string | null;
   status: "todo" | "in_progress" | "done";
@@ -56,6 +57,7 @@ const priorityValues = ["Lowest", "Low", "Normal", "High", "Very high"] as const
 const listTasksSchema = z.object({
   status: z.enum(["todo", "in_progress", "done"]).optional(),
   priority: z.enum(priorityValues).optional(),
+  categoryId: z.string().uuid().optional(),
   page: z.number().int().positive().optional(),
   limit: z.number().int().positive().max(100).optional(),
 });
@@ -64,6 +66,7 @@ const createTaskSchema = z.object({
   title: z.string().min(1),
   description: z.string().optional(),
   priority: z.enum(priorityValues).optional(),
+  categoryId: z.string().uuid().optional(),
   deadline: z.string().optional(),
   deadlineTime: z.string().optional(),
   scheduledStart: z.string().optional(),
@@ -80,6 +83,7 @@ const updateTaskSchema = z.object({
   description: z.string().nullable().optional(),
   status: z.enum(["todo", "in_progress", "done"]).optional(),
   priority: z.enum(priorityValues).optional(),
+  categoryId: z.string().uuid().nullable().optional(),
   deadline: z.string().nullable().optional(),
   deadlineTime: z.string().nullable().optional(),
   scheduledStart: z.string().nullable().optional(),
@@ -140,6 +144,10 @@ export const taskTools = [
           enum: priorityValues,
           description: "Filter by task priority",
         },
+        categoryId: {
+          type: "string",
+          description: "Filter by category ID (UUID)",
+        },
         page: {
           type: "number",
           description: "Page number (default: 1)",
@@ -156,6 +164,7 @@ export const taskTools = [
       const result = await client.get<PaginatedData<Task>>("/tasks", {
         status: input.status,
         priority: input.priority,
+        categoryId: input.categoryId,
         page: input.page,
         limit: input.limit,
       });
@@ -187,6 +196,10 @@ export const taskTools = [
           type: "string",
           enum: priorityValues,
           description: "Task priority (default: Normal)",
+        },
+        categoryId: {
+          type: "string",
+          description: "Category ID (UUID) to assign the task to",
         },
         deadline: {
           type: "string",
@@ -275,6 +288,10 @@ export const taskTools = [
           type: "string",
           enum: priorityValues,
           description: "New task priority",
+        },
+        categoryId: {
+          type: "string",
+          description: "New category ID (UUID) (null to clear)",
         },
         deadline: {
           type: "string",

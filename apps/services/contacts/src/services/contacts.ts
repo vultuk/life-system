@@ -18,7 +18,7 @@ export async function listContacts(
   userId: string,
   query: ContactQueryInput
 ): Promise<ContactsListResult> {
-  const { search, page, limit } = query;
+  const { search, categoryId, page, limit } = query;
   const offset = (page - 1) * limit;
 
   const conditions: SQL[] = [eq(contacts.userId, userId)];
@@ -31,6 +31,10 @@ export async function listContacts(
         ilike(contacts.phone, `%${search}%`)
       ) ?? eq(contacts.userId, userId)
     );
+  }
+
+  if (categoryId) {
+    conditions.push(eq(contacts.categoryId, categoryId));
   }
 
   const whereClause = and(...conditions);
@@ -89,6 +93,7 @@ export async function createContact(
     phone: input.phone,
     relationship: input.relationship,
     notes: input.notes,
+    categoryId: input.categoryId ?? null,
   };
 
   const [contact] = await db.insert(contacts).values(newContact).returning();
@@ -128,6 +133,10 @@ export async function updateContact(
 
   if (input.notes !== undefined) {
     updates.notes = input.notes;
+  }
+
+  if (input.categoryId !== undefined) {
+    updates.categoryId = input.categoryId;
   }
 
   const [contact] = await db

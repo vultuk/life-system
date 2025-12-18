@@ -3,6 +3,7 @@ import { Button } from "~/components/ui/Button";
 import { Input } from "~/components/ui/Input";
 import { Textarea } from "~/components/ui/Textarea";
 import { Badge } from "~/components/ui/Badge";
+import { CategorySelector } from "~/components/categories/CategorySelector";
 import type { Note, CreateNoteInput } from "~/api/notes";
 
 export type NoteFormData = CreateNoteInput;
@@ -19,6 +20,9 @@ export function NoteForm({ note, onSubmit, onCancel, isLoading }: NoteFormProps)
   const [content, setContent] = useState(note?.content || "");
   const [tags, setTags] = useState<string[]>(note?.tags || []);
   const [tagInput, setTagInput] = useState("");
+  const [categoryId, setCategoryId] = useState<string | null>(
+    note?.categoryId || null
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -38,6 +42,7 @@ export function NoteForm({ note, onSubmit, onCancel, isLoading }: NoteFormProps)
       title: title.trim(),
       content: content.trim() || undefined,
       tags: tags.length > 0 ? tags : undefined,
+      categoryId: categoryId || undefined,
     });
   };
 
@@ -62,14 +67,22 @@ export function NoteForm({ note, onSubmit, onCancel, isLoading }: NoteFormProps)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <Input
-        label="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        error={errors.title}
-        placeholder="Enter note title"
-        required
-      />
+      <div className="grid grid-cols-2 gap-4">
+        <Input
+          label="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          error={errors.title}
+          placeholder="Enter note title"
+          required
+        />
+
+        <CategorySelector
+          label="Category"
+          value={categoryId}
+          onChange={setCategoryId}
+        />
+      </div>
 
       <Textarea
         label="Content"

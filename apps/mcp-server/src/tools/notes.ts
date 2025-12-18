@@ -5,6 +5,7 @@ import { getClient, type PaginatedData } from "../client";
 interface Note {
   id: string;
   userId: string;
+  categoryId: string | null;
   title: string;
   content: string | null;
   tags: string[] | null;
@@ -16,6 +17,7 @@ interface Note {
 const listNotesSchema = z.object({
   search: z.string().optional(),
   tag: z.string().optional(),
+  categoryId: z.string().uuid().optional(),
   page: z.number().int().positive().optional(),
   limit: z.number().int().positive().max(100).optional(),
 });
@@ -24,6 +26,7 @@ const createNoteSchema = z.object({
   title: z.string().min(1),
   content: z.string().optional(),
   tags: z.array(z.string()).optional(),
+  categoryId: z.string().uuid().optional(),
 });
 
 const getNoteSchema = z.object({
@@ -35,6 +38,7 @@ const updateNoteSchema = z.object({
   title: z.string().min(1).optional(),
   content: z.string().nullable().optional(),
   tags: z.array(z.string()).nullable().optional(),
+  categoryId: z.string().uuid().nullable().optional(),
 });
 
 const deleteNoteSchema = z.object({
@@ -57,6 +61,10 @@ export const noteTools = [
           type: "string",
           description: "Filter by a specific tag",
         },
+        categoryId: {
+          type: "string",
+          description: "Filter by category ID (UUID)",
+        },
         page: {
           type: "number",
           description: "Page number (default: 1)",
@@ -73,6 +81,7 @@ export const noteTools = [
       const result = await client.get<PaginatedData<Note>>("/notes", {
         search: input.search,
         tag: input.tag,
+        categoryId: input.categoryId,
         page: input.page,
         limit: input.limit,
       });
@@ -104,6 +113,10 @@ export const noteTools = [
           type: "array",
           items: { type: "string" },
           description: "Tags for categorizing the note",
+        },
+        categoryId: {
+          type: "string",
+          description: "Category ID (UUID) to assign the note to",
         },
       },
       required: ["title"],
@@ -171,6 +184,10 @@ export const noteTools = [
           type: "array",
           items: { type: "string" },
           description: "New tags (null to clear)",
+        },
+        categoryId: {
+          type: "string",
+          description: "New category ID (UUID) (null to clear)",
         },
       },
       required: ["id"],

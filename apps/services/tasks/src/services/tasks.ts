@@ -20,7 +20,7 @@ export async function listTasks(
   userId: string,
   query: TaskQueryInput
 ): Promise<TasksListResult> {
-  const { status, priority, page, limit } = query;
+  const { status, priority, categoryId, page, limit } = query;
   const offset = (page - 1) * limit;
 
   const conditions: SQL[] = [eq(tasks.userId, userId)];
@@ -31,6 +31,10 @@ export async function listTasks(
 
   if (priority) {
     conditions.push(eq(tasks.priority, priority));
+  }
+
+  if (categoryId) {
+    conditions.push(eq(tasks.categoryId, categoryId));
   }
 
   const whereClause = and(...conditions);
@@ -84,6 +88,7 @@ export async function createTask(
     title: input.title,
     description: input.description,
     priority: input.priority,
+    categoryId: input.categoryId ?? null,
     deadline: input.deadline ?? null,
     deadlineTime: input.deadline
       ? input.deadlineTime ?? DEFAULT_DEADLINE_TIME
@@ -135,6 +140,10 @@ export async function updateTask(
 
   if (input.priority !== undefined) {
     updates.priority = input.priority;
+  }
+
+  if (input.categoryId !== undefined) {
+    updates.categoryId = input.categoryId;
   }
 
   if (input.deadline !== undefined) {

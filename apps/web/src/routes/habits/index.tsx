@@ -4,6 +4,7 @@ import { PageHeader } from "~/components/layout/PageHeader";
 import { Button } from "~/components/ui/Button";
 import { Loading } from "~/components/ui/Spinner";
 import { HabitList } from "~/components/habits/HabitList";
+import { CategoryFilter } from "~/components/categories/CategoryFilter";
 import { useHabits, useLogHabit } from "~/hooks/useHabits";
 import { getTodayString } from "~/utils/dates";
 import { cn } from "~/utils/cn";
@@ -17,11 +18,13 @@ type FrequencyFilter = "all" | "daily" | "weekly" | "monthly";
 function HabitsPage() {
   const navigate = useNavigate();
   const [frequency, setFrequency] = useState<FrequencyFilter>("all");
+  const [categoryId, setCategoryId] = useState<string | undefined>(undefined);
   const [page, setPage] = useState(1);
   const [loggingHabitId, setLoggingHabitId] = useState<string | null>(null);
 
   const { data, isLoading } = useHabits({
     frequency: frequency === "all" ? undefined : frequency,
+    categoryId,
     page,
     limit: 12,
   });
@@ -55,7 +58,7 @@ function HabitsPage() {
         }
       />
 
-      <div className="mb-6 border-b border-gray-200 dark:border-gray-700">
+      <div className="mb-6 flex items-center justify-between border-b border-gray-200 dark:border-gray-700">
         <nav className="flex gap-4">
           {tabs.map((tab) => (
             <button
@@ -75,6 +78,15 @@ function HabitsPage() {
             </button>
           ))}
         </nav>
+        <div className="pb-3">
+          <CategoryFilter
+            value={categoryId}
+            onChange={(id) => {
+              setCategoryId(id);
+              setPage(1);
+            }}
+          />
+        </div>
       </div>
 
       {isLoading ? (

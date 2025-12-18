@@ -27,13 +27,17 @@ export async function listHabits(
   userId: string,
   query: HabitQueryInput
 ): Promise<HabitsListResult> {
-  const { frequency, page, limit } = query;
+  const { frequency, categoryId, page, limit } = query;
   const offset = (page - 1) * limit;
 
   const conditions: SQL[] = [eq(habits.userId, userId)];
 
   if (frequency) {
     conditions.push(eq(habits.frequency, frequency));
+  }
+
+  if (categoryId) {
+    conditions.push(eq(habits.categoryId, categoryId));
   }
 
   const whereClause = and(...conditions);
@@ -91,6 +95,7 @@ export async function createHabit(
     description: input.description,
     frequency: input.frequency,
     targetCount: input.targetCount,
+    categoryId: input.categoryId ?? null,
   };
 
   const [habit] = await db.insert(habits).values(newHabit).returning();
@@ -126,6 +131,10 @@ export async function updateHabit(
 
   if (input.targetCount !== undefined) {
     updates.targetCount = input.targetCount;
+  }
+
+  if (input.categoryId !== undefined) {
+    updates.categoryId = input.categoryId;
   }
 
   const [habit] = await db

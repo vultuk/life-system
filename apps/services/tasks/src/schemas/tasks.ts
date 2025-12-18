@@ -17,6 +17,7 @@ export const createTaskSchema = z
     title: z.string().min(1, "Title is required").max(255, "Title too long"),
     description: z.string().max(5000, "Description too long").optional(),
     priority: z.enum(taskPriorityValues).optional().default("Normal"),
+    categoryId: z.string().uuid("Invalid category ID").optional(),
     deadline: z
       .string()
       .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)")
@@ -55,6 +56,7 @@ export const updateTaskSchema = z
       .optional(),
     status: z.enum(taskStatusValues).optional(),
     priority: z.enum(taskPriorityValues).optional(),
+    categoryId: z.string().uuid("Invalid category ID").nullable().optional(),
     deadline: z
       .string()
       .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)")
@@ -84,6 +86,7 @@ export const updateTaskSchema = z
 export const taskQuerySchema = z.object({
   status: z.enum(taskStatusValues).optional(),
   priority: z.enum(taskPriorityValues).optional(),
+  categoryId: z.string().uuid("Invalid category ID").optional(),
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
 });

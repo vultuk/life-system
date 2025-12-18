@@ -3,6 +3,7 @@ import { Button } from "~/components/ui/Button";
 import { Input } from "~/components/ui/Input";
 import { Textarea } from "~/components/ui/Textarea";
 import { Select } from "~/components/ui/Select";
+import { CategorySelector } from "~/components/categories/CategorySelector";
 import type { Habit, CreateHabitInput } from "~/api/habits";
 
 export type HabitFormData = CreateHabitInput;
@@ -21,6 +22,9 @@ export function HabitForm({ habit, onSubmit, onCancel, isLoading }: HabitFormPro
     habit?.frequency || "daily"
   );
   const [targetCount, setTargetCount] = useState(habit?.targetCount || 1);
+  const [categoryId, setCategoryId] = useState<string | null>(
+    habit?.categoryId || null
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -45,6 +49,7 @@ export function HabitForm({ habit, onSubmit, onCancel, isLoading }: HabitFormPro
       description: description.trim() || undefined,
       frequency,
       targetCount,
+      categoryId: categoryId || undefined,
     });
   };
 
@@ -89,6 +94,12 @@ export function HabitForm({ habit, onSubmit, onCancel, isLoading }: HabitFormPro
           error={errors.targetCount}
         />
       </div>
+
+      <CategorySelector
+        label="Category"
+        value={categoryId}
+        onChange={setCategoryId}
+      />
 
       <div className="flex justify-end gap-3 pt-4">
         <Button type="button" variant="secondary" onClick={onCancel}>

@@ -7,6 +7,7 @@ export const createHabitSchema = z.object({
   description: z.string().max(1000, "Description too long").optional(),
   frequency: z.enum(frequencyValues).optional().default("daily"),
   targetCount: z.number().int().positive().max(100).optional().default(1),
+  categoryId: z.string().uuid("Invalid category ID").optional(),
 });
 
 export const updateHabitSchema = z.object({
@@ -14,10 +15,12 @@ export const updateHabitSchema = z.object({
   description: z.string().max(1000, "Description too long").nullable().optional(),
   frequency: z.enum(frequencyValues).optional(),
   targetCount: z.number().int().positive().max(100).optional(),
+  categoryId: z.string().uuid("Invalid category ID").nullable().optional(),
 });
 
 export const habitQuerySchema = z.object({
   frequency: z.enum(frequencyValues).optional(),
+  categoryId: z.string().uuid("Invalid category ID").optional(),
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
 });

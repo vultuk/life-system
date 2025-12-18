@@ -7,6 +7,7 @@ import {
   date,
 } from "drizzle-orm/pg-core";
 import { users } from "./users";
+import { categories } from "./categories";
 
 export const taskStatusEnum = pgEnum("task_status", [
   "todo",
@@ -27,6 +28,9 @@ export const tasks = pgTable("tasks", {
   userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  categoryId: uuid("category_id").references(() => categories.id, {
+    onDelete: "set null",
+  }),
   title: text("title").notNull(),
   description: text("description"),
   status: taskStatusEnum("status").notNull().default("todo"),

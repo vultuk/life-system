@@ -18,7 +18,7 @@ export async function listNotes(
   userId: string,
   query: NoteQueryInput
 ): Promise<NotesListResult> {
-  const { search, tag, page, limit } = query;
+  const { search, tag, categoryId, page, limit } = query;
   const offset = (page - 1) * limit;
 
   const conditions: SQL[] = [eq(notes.userId, userId)];
@@ -34,6 +34,10 @@ export async function listNotes(
 
   if (tag) {
     conditions.push(arrayContains(notes.tags, [tag]));
+  }
+
+  if (categoryId) {
+    conditions.push(eq(notes.categoryId, categoryId));
   }
 
   const whereClause = and(...conditions);
@@ -90,6 +94,7 @@ export async function createNote(
     title: input.title,
     content: input.content,
     tags: input.tags,
+    categoryId: input.categoryId ?? null,
   };
 
   const [note] = await db.insert(notes).values(newNote).returning();
@@ -121,6 +126,10 @@ export async function updateNote(
 
   if (input.tags !== undefined) {
     updates.tags = input.tags;
+  }
+
+  if (input.categoryId !== undefined) {
+    updates.categoryId = input.categoryId;
   }
 
   const [note] = await db

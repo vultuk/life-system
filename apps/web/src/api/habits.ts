@@ -3,6 +3,7 @@ import { api, type PaginatedResponse } from "./client";
 export interface Habit {
   id: string;
   userId: string;
+  categoryId: string | null;
   name: string;
   description: string | null;
   frequency: "daily" | "weekly" | "monthly";
@@ -23,6 +24,7 @@ export interface HabitLog {
 
 export interface HabitFilters {
   frequency?: "daily" | "weekly" | "monthly";
+  categoryId?: string;
   page?: number;
   limit?: number;
 }
@@ -39,6 +41,7 @@ export interface CreateHabitInput {
   description?: string;
   frequency?: "daily" | "weekly" | "monthly";
   targetCount?: number;
+  categoryId?: string;
 }
 
 export interface UpdateHabitInput {
@@ -46,6 +49,7 @@ export interface UpdateHabitInput {
   description?: string | null;
   frequency?: "daily" | "weekly" | "monthly";
   targetCount?: number;
+  categoryId?: string | null;
 }
 
 export interface CreateHabitLogInput {

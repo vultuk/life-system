@@ -6,6 +6,7 @@ export type TaskStatus = "todo" | "in_progress" | "done";
 export interface Task {
   id: string;
   userId: string;
+  categoryId: string | null;
   title: string;
   description: string | null;
   status: TaskStatus;
@@ -53,6 +54,7 @@ export interface TaskLink {
 export interface TaskFilters {
   status?: TaskStatus;
   priority?: TaskPriority;
+  categoryId?: string;
   page?: number;
   limit?: number;
 }
@@ -61,6 +63,7 @@ export interface CreateTaskInput {
   title: string;
   description?: string;
   priority?: TaskPriority;
+  categoryId?: string;
   deadline?: string;
   deadlineTime?: string;
   scheduledStart?: string;
@@ -72,6 +75,7 @@ export interface UpdateTaskInput {
   description?: string | null;
   status?: TaskStatus;
   priority?: TaskPriority;
+  categoryId?: string | null;
   deadline?: string | null;
   deadlineTime?: string | null;
   scheduledStart?: string | null;

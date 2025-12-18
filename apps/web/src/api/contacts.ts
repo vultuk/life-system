@@ -3,6 +3,7 @@ import { api, type PaginatedResponse } from "./client";
 export interface Contact {
   id: string;
   userId: string;
+  categoryId: string | null;
   name: string;
   email: string | null;
   phone: string | null;
@@ -14,6 +15,7 @@ export interface Contact {
 
 export interface ContactFilters {
   search?: string;
+  categoryId?: string;
   page?: number;
   limit?: number;
 }
@@ -24,6 +26,7 @@ export interface CreateContactInput {
   phone?: string;
   relationship?: string;
   notes?: string;
+  categoryId?: string;
 }
 
 export interface UpdateContactInput {
@@ -32,6 +35,7 @@ export interface UpdateContactInput {
   phone?: string | null;
   relationship?: string | null;
   notes?: string | null;
+  categoryId?: string | null;
 }
 
 export const contactsApi = {

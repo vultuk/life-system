@@ -6,6 +6,7 @@ export const createContactSchema = z.object({
   phone: z.string().max(50, "Phone too long").optional(),
   relationship: z.string().max(100, "Relationship too long").optional(),
   notes: z.string().max(5000, "Notes too long").optional(),
+  categoryId: z.string().uuid("Invalid category ID").optional(),
 });
 
 export const updateContactSchema = z.object({
@@ -14,10 +15,12 @@ export const updateContactSchema = z.object({
   phone: z.string().max(50, "Phone too long").nullable().optional(),
   relationship: z.string().max(100, "Relationship too long").nullable().optional(),
   notes: z.string().max(5000, "Notes too long").nullable().optional(),
+  categoryId: z.string().uuid("Invalid category ID").nullable().optional(),
 });
 
 export const contactQuerySchema = z.object({
   search: z.string().optional(),
+  categoryId: z.string().uuid("Invalid category ID").optional(),
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
 });

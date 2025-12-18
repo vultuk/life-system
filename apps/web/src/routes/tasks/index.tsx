@@ -4,6 +4,7 @@ import { PageHeader } from "~/components/layout/PageHeader";
 import { Button } from "~/components/ui/Button";
 import { Loading } from "~/components/ui/Spinner";
 import { TaskList } from "~/components/tasks/TaskList";
+import { CategoryFilter } from "~/components/categories/CategoryFilter";
 import { useTasks } from "~/hooks/useTasks";
 import { cn } from "~/utils/cn";
 
@@ -16,10 +17,12 @@ type StatusFilter = "all" | "todo" | "in_progress" | "done";
 function TasksPage() {
   const navigate = useNavigate();
   const [status, setStatus] = useState<StatusFilter>("all");
+  const [categoryId, setCategoryId] = useState<string | undefined>(undefined);
   const [page, setPage] = useState(1);
 
   const { data, isLoading } = useTasks({
     status: status === "all" ? undefined : status,
+    categoryId,
     page,
     limit: 12,
   });
@@ -43,7 +46,7 @@ function TasksPage() {
         }
       />
 
-      <div className="mb-6 border-b border-gray-200 dark:border-gray-700">
+      <div className="mb-6 flex items-center justify-between border-b border-gray-200 dark:border-gray-700">
         <nav className="flex gap-4">
           {tabs.map((tab) => (
             <button
@@ -63,6 +66,15 @@ function TasksPage() {
             </button>
           ))}
         </nav>
+        <div className="pb-3">
+          <CategoryFilter
+            value={categoryId}
+            onChange={(id) => {
+              setCategoryId(id);
+              setPage(1);
+            }}
+          />
+        </div>
       </div>
 
       {isLoading ? (

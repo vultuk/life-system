@@ -5,6 +5,7 @@ import { Button } from "~/components/ui/Button";
 import { Input } from "~/components/ui/Input";
 import { Loading } from "~/components/ui/Spinner";
 import { ContactList } from "~/components/contacts/ContactList";
+import { CategoryFilter } from "~/components/categories/CategoryFilter";
 import { useContacts } from "~/hooks/useContacts";
 
 export const Route = createFileRoute("/contacts/")({
@@ -14,10 +15,12 @@ export const Route = createFileRoute("/contacts/")({
 function ContactsPage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
+  const [categoryId, setCategoryId] = useState<string | undefined>(undefined);
   const [page, setPage] = useState(1);
 
   const { data, isLoading } = useContacts({
     search: search || undefined,
+    categoryId,
     page,
     limit: 12,
   });
@@ -34,7 +37,7 @@ function ContactsPage() {
         }
       />
 
-      <div className="mb-6">
+      <div className="mb-6 flex gap-4 items-center">
         <Input
           placeholder="Search contacts..."
           value={search}
@@ -43,6 +46,13 @@ function ContactsPage() {
             setPage(1);
           }}
           className="max-w-md"
+        />
+        <CategoryFilter
+          value={categoryId}
+          onChange={(id) => {
+            setCategoryId(id);
+            setPage(1);
+          }}
         />
       </div>
 

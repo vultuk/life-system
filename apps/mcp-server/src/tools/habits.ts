@@ -5,6 +5,7 @@ import { getClient, type PaginatedData } from "../client";
 interface Habit {
   id: string;
   userId: string;
+  categoryId: string | null;
   name: string;
   description: string | null;
   frequency: "daily" | "weekly" | "monthly";
@@ -26,6 +27,7 @@ interface HabitLog {
 // Schemas
 const listHabitsSchema = z.object({
   frequency: z.enum(["daily", "weekly", "monthly"]).optional(),
+  categoryId: z.string().uuid().optional(),
   page: z.number().int().positive().optional(),
   limit: z.number().int().positive().max(100).optional(),
 });
@@ -35,6 +37,7 @@ const createHabitSchema = z.object({
   description: z.string().optional(),
   frequency: z.enum(["daily", "weekly", "monthly"]).optional(),
   targetCount: z.number().int().positive().optional(),
+  categoryId: z.string().uuid().optional(),
 });
 
 const getHabitSchema = z.object({
@@ -47,6 +50,7 @@ const updateHabitSchema = z.object({
   description: z.string().nullable().optional(),
   frequency: z.enum(["daily", "weekly", "monthly"]).optional(),
   targetCount: z.number().int().positive().optional(),
+  categoryId: z.string().uuid().nullable().optional(),
 });
 
 const deleteHabitSchema = z.object({
@@ -81,6 +85,10 @@ export const habitTools = [
           enum: ["daily", "weekly", "monthly"],
           description: "Filter by habit frequency",
         },
+        categoryId: {
+          type: "string",
+          description: "Filter by category ID (UUID)",
+        },
         page: {
           type: "number",
           description: "Page number (default: 1)",
@@ -96,6 +104,7 @@ export const habitTools = [
       const client = getClient();
       const result = await client.get<PaginatedData<Habit>>("/habits", {
         frequency: input.frequency,
+        categoryId: input.categoryId,
         page: input.page,
         limit: input.limit,
       });
@@ -131,6 +140,10 @@ export const habitTools = [
         targetCount: {
           type: "number",
           description: "Target number of completions per period (default: 1)",
+        },
+        categoryId: {
+          type: "string",
+          description: "Category ID (UUID) to assign the habit to",
         },
       },
       required: ["name"],
@@ -202,6 +215,10 @@ export const habitTools = [
         targetCount: {
           type: "number",
           description: "New target count",
+        },
+        categoryId: {
+          type: "string",
+          description: "New category ID (UUID) (null to clear)",
         },
       },
       required: ["id"],

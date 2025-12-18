@@ -3,6 +3,7 @@ import { Button } from "~/components/ui/Button";
 import { Input } from "~/components/ui/Input";
 import { Textarea } from "~/components/ui/Textarea";
 import { Select } from "~/components/ui/Select";
+import { CategorySelector } from "~/components/categories/CategorySelector";
 import type {
   Task,
   CreateTaskInput,
@@ -31,6 +32,9 @@ export function TaskForm({
     task?.priority || "Normal"
   );
   const [status, setStatus] = useState<TaskStatus>(task?.status || "todo");
+  const [categoryId, setCategoryId] = useState<string | null>(
+    task?.categoryId || null
+  );
   const [deadline, setDeadline] = useState(task?.deadline || "");
   const [deadlineTime, setDeadlineTime] = useState(task?.deadlineTime || "");
   const [scheduledStart, setScheduledStart] = useState(
@@ -64,6 +68,7 @@ export function TaskForm({
       title: title.trim(),
       description: description.trim() || undefined,
       priority,
+      categoryId: categoryId || undefined,
       ...(task && { status }),
       deadline: deadline || undefined,
       deadlineTime: deadlineTime || undefined,
@@ -111,19 +116,25 @@ export function TaskForm({
           ]}
         />
 
-        {task && (
-          <Select
-            label="Status"
-            value={status}
-            onChange={(e) => setStatus(e.target.value as TaskStatus)}
-            options={[
-              { value: "todo", label: "To Do" },
-              { value: "in_progress", label: "In Progress" },
-              { value: "done", label: "Done" },
-            ]}
-          />
-        )}
+        <CategorySelector
+          label="Category"
+          value={categoryId}
+          onChange={setCategoryId}
+        />
       </div>
+
+      {task && (
+        <Select
+          label="Status"
+          value={status}
+          onChange={(e) => setStatus(e.target.value as TaskStatus)}
+          options={[
+            { value: "todo", label: "To Do" },
+            { value: "in_progress", label: "In Progress" },
+            { value: "done", label: "Done" },
+          ]}
+        />
+      )}
 
       <div className="grid grid-cols-2 gap-4">
         <Input

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "~/components/ui/Button";
 import { Input } from "~/components/ui/Input";
 import { Textarea } from "~/components/ui/Textarea";
+import { CategorySelector } from "~/components/categories/CategorySelector";
 import type { Contact, CreateContactInput } from "~/api/contacts";
 
 export type ContactFormData = CreateContactInput;
@@ -19,6 +20,9 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading }: ContactF
   const [phone, setPhone] = useState(contact?.phone || "");
   const [relationship, setRelationship] = useState(contact?.relationship || "");
   const [notes, setNotes] = useState(contact?.notes || "");
+  const [categoryId, setCategoryId] = useState<string | null>(
+    contact?.categoryId || null
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -44,6 +48,7 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading }: ContactF
       phone: phone.trim() || undefined,
       relationship: relationship.trim() || undefined,
       notes: notes.trim() || undefined,
+      categoryId: categoryId || undefined,
     });
   };
 
@@ -74,12 +79,20 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading }: ContactF
         placeholder="+1 (555) 123-4567"
       />
 
-      <Input
-        label="Relationship"
-        value={relationship}
-        onChange={(e) => setRelationship(e.target.value)}
-        placeholder="e.g., Friend, Colleague, Family"
-      />
+      <div className="grid grid-cols-2 gap-4">
+        <Input
+          label="Relationship"
+          value={relationship}
+          onChange={(e) => setRelationship(e.target.value)}
+          placeholder="e.g., Friend, Colleague, Family"
+        />
+
+        <CategorySelector
+          label="Category"
+          value={categoryId}
+          onChange={setCategoryId}
+        />
+      </div>
 
       <Textarea
         label="Notes"

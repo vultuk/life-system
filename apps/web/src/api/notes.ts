@@ -3,6 +3,7 @@ import { api, type PaginatedResponse } from "./client";
 export interface Note {
   id: string;
   userId: string;
+  categoryId: string | null;
   title: string;
   content: string | null;
   tags: string[] | null;
@@ -13,6 +14,7 @@ export interface Note {
 export interface NoteFilters {
   search?: string;
   tag?: string;
+  categoryId?: string;
   page?: number;
   limit?: number;
 }
@@ -21,12 +23,14 @@ export interface CreateNoteInput {
   title: string;
   content?: string;
   tags?: string[];
+  categoryId?: string;
 }
 
 export interface UpdateNoteInput {
   title?: string;
   content?: string | null;
   tags?: string[] | null;
+  categoryId?: string | null;
 }
 
 export const notesApi = {

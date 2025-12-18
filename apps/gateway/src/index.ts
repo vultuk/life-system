@@ -6,7 +6,7 @@ import {
   AppError,
   createApiErrorResponse,
 } from "@life/shared";
-import { authRoutes, tasksRoutes, contactsRoutes, notesRoutes, habitsRoutes, oauthRoutes } from "./routes";
+import { authRoutes, tasksRoutes, contactsRoutes, notesRoutes, habitsRoutes, categoriesRoutes, oauthRoutes } from "./routes";
 
 const app = new Hono();
 
@@ -32,6 +32,7 @@ app.route("/tasks", tasksRoutes);
 app.route("/contacts", contactsRoutes);
 app.route("/notes", notesRoutes);
 app.route("/habits", habitsRoutes);
+app.route("/categories", categoriesRoutes);
 
 // OAuth routes (mounted at root for /.well-known and /oauth)
 app.route("/", oauthRoutes);
