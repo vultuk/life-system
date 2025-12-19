@@ -1,11 +1,10 @@
 import { eq, and, gte, inArray } from "drizzle-orm";
 import {
   db,
-  carddavContacts,
+  contacts,
   contactTombstones,
-  categories,
-  type CarddavContact,
-  type NewCarddavContact,
+  type Contact,
+  type NewContact,
 } from "@life/db";
 import {
   VCardGenerator,
@@ -19,14 +18,14 @@ import {
 export async function getContactsByCategory(
   userId: string,
   categoryId: string
-): Promise<CarddavContact[]> {
+): Promise<Contact[]> {
   return db
     .select()
-    .from(carddavContacts)
+    .from(contacts)
     .where(
       and(
-        eq(carddavContacts.userId, userId),
-        eq(carddavContacts.categoryId, categoryId)
+        eq(contacts.userId, userId),
+        eq(contacts.categoryId, categoryId)
       )
     );
 }
@@ -34,11 +33,11 @@ export async function getContactsByCategory(
 /**
  * Get all contacts for a user (across all address books)
  */
-export async function getAllContacts(userId: string): Promise<CarddavContact[]> {
+export async function getAllContacts(userId: string): Promise<Contact[]> {
   return db
     .select()
-    .from(carddavContacts)
-    .where(eq(carddavContacts.userId, userId));
+    .from(contacts)
+    .where(eq(contacts.userId, userId));
 }
 
 /**
@@ -47,14 +46,14 @@ export async function getAllContacts(userId: string): Promise<CarddavContact[]> 
 export async function getContactById(
   userId: string,
   contactId: string
-): Promise<CarddavContact | null> {
+): Promise<Contact | null> {
   const [contact] = await db
     .select()
-    .from(carddavContacts)
+    .from(contacts)
     .where(
       and(
-        eq(carddavContacts.id, contactId),
-        eq(carddavContacts.userId, userId)
+        eq(contacts.id, contactId),
+        eq(contacts.userId, userId)
       )
     )
     .limit(1);
@@ -68,16 +67,16 @@ export async function getContactById(
 export async function getContactsByIds(
   userId: string,
   contactIds: string[]
-): Promise<CarddavContact[]> {
+): Promise<Contact[]> {
   if (contactIds.length === 0) return [];
 
   return db
     .select()
-    .from(carddavContacts)
+    .from(contacts)
     .where(
       and(
-        eq(carddavContacts.userId, userId),
-        inArray(carddavContacts.id, contactIds)
+        eq(contacts.userId, userId),
+        inArray(contacts.id, contactIds)
       )
     );
 }
@@ -89,15 +88,15 @@ export async function getContactsModifiedSince(
   userId: string,
   categoryId: string,
   since: Date
-): Promise<CarddavContact[]> {
+): Promise<Contact[]> {
   return db
     .select()
-    .from(carddavContacts)
+    .from(contacts)
     .where(
       and(
-        eq(carddavContacts.userId, userId),
-        eq(carddavContacts.categoryId, categoryId),
-        gte(carddavContacts.updatedAt, since)
+        eq(contacts.userId, userId),
+        eq(contacts.categoryId, categoryId),
+        gte(contacts.updatedAt, since)
       )
     );
 }
@@ -110,36 +109,45 @@ export async function createContactFromVCard(
   categoryId: string,
   vcardData: string,
   contactId?: string
-): Promise<CarddavContact> {
+): Promise<Contact> {
   const parsed = VCardGenerator.parse(vcardData);
   const etag = VCardGenerator.generateEtag(vcardData);
 
-  const newContact: NewCarddavContact = {
+  // Compute display name for the legacy 'name' field
+  const displayName = parsed.displayName ||
+    [parsed.givenName, parsed.familyName].filter(Boolean).join(" ") ||
+    "Unknown";
+
+  const newContact: NewContact = {
     id: contactId,
     userId,
     categoryId,
+    // Legacy fields
+    name: displayName,
+    email: parsed.emails?.[0]?.value || null,
+    phone: parsed.phoneNumbers?.[0]?.value || null,
+    notes: parsed.notes || null,
+    // Full vCard data
     vcardData,
     etag,
-    displayName: parsed.displayName,
-    givenName: parsed.givenName,
-    familyName: parsed.familyName,
-    primaryEmail: parsed.emails?.[0]?.value,
-    primaryPhone: parsed.phoneNumbers?.[0]?.value,
-    organization: parsed.organization,
-    jobTitle: parsed.jobTitle,
-    nickname: parsed.nickname,
-    birthday: parsed.birthday,
-    notes: parsed.notes,
+    // Extended fields
+    displayName: parsed.displayName || null,
+    givenName: parsed.givenName || null,
+    familyName: parsed.familyName || null,
+    nickname: parsed.nickname || null,
+    organization: parsed.organization || null,
+    jobTitle: parsed.jobTitle || null,
+    birthday: parsed.birthday || null,
     emails: parsed.emails ? JSON.stringify(parsed.emails) : null,
     phoneNumbers: parsed.phoneNumbers ? JSON.stringify(parsed.phoneNumbers) : null,
     addresses: parsed.addresses ? JSON.stringify(parsed.addresses) : null,
     urls: parsed.urls ? JSON.stringify(parsed.urls) : null,
-    photoData: parsed.photoData,
-    photoMediaType: parsed.photoMediaType,
+    photoData: parsed.photoData || null,
+    photoMediaType: parsed.photoMediaType || null,
   };
 
   const [contact] = await db
-    .insert(carddavContacts)
+    .insert(contacts)
     .values(newContact)
     .returning();
 
@@ -153,36 +161,45 @@ export async function updateContactFromVCard(
   userId: string,
   contactId: string,
   vcardData: string
-): Promise<CarddavContact | null> {
+): Promise<Contact | null> {
   const existing = await getContactById(userId, contactId);
   if (!existing) return null;
 
   const parsed = VCardGenerator.parse(vcardData);
   const etag = VCardGenerator.generateEtag(vcardData);
 
+  // Compute display name for the legacy 'name' field
+  const displayName = parsed.displayName ||
+    [parsed.givenName, parsed.familyName].filter(Boolean).join(" ") ||
+    existing.name;
+
   const [contact] = await db
-    .update(carddavContacts)
+    .update(contacts)
     .set({
+      // Legacy fields
+      name: displayName,
+      email: parsed.emails?.[0]?.value || null,
+      phone: parsed.phoneNumbers?.[0]?.value || null,
+      notes: parsed.notes || null,
+      // Full vCard data
       vcardData,
       etag,
-      displayName: parsed.displayName,
-      givenName: parsed.givenName,
-      familyName: parsed.familyName,
-      primaryEmail: parsed.emails?.[0]?.value,
-      primaryPhone: parsed.phoneNumbers?.[0]?.value,
-      organization: parsed.organization,
-      jobTitle: parsed.jobTitle,
-      nickname: parsed.nickname,
-      birthday: parsed.birthday,
-      notes: parsed.notes,
+      // Extended fields
+      displayName: parsed.displayName || null,
+      givenName: parsed.givenName || null,
+      familyName: parsed.familyName || null,
+      nickname: parsed.nickname || null,
+      organization: parsed.organization || null,
+      jobTitle: parsed.jobTitle || null,
+      birthday: parsed.birthday || null,
       emails: parsed.emails ? JSON.stringify(parsed.emails) : null,
       phoneNumbers: parsed.phoneNumbers ? JSON.stringify(parsed.phoneNumbers) : null,
       addresses: parsed.addresses ? JSON.stringify(parsed.addresses) : null,
       urls: parsed.urls ? JSON.stringify(parsed.urls) : null,
-      photoData: parsed.photoData,
-      photoMediaType: parsed.photoMediaType,
+      photoData: parsed.photoData || null,
+      photoMediaType: parsed.photoMediaType || null,
     })
-    .where(eq(carddavContacts.id, contactId))
+    .where(eq(contacts.id, contactId))
     .returning();
 
   return contact;
@@ -207,7 +224,7 @@ export async function deleteContact(
   });
 
   // Delete the contact
-  await db.delete(carddavContacts).where(eq(carddavContacts.id, contactId));
+  await db.delete(contacts).where(eq(contacts.id, contactId));
 
   return true;
 }
@@ -236,13 +253,49 @@ export async function getDeletedContactIdsSince(
 }
 
 /**
- * Convert a CarddavContact to XMLContact format for XML responses
+ * Convert a Contact to XMLContact format for XML responses
+ * Generates vCard on-the-fly for legacy contacts without vCard data
  */
-export function toXMLContact(contact: CarddavContact): XMLContact {
+export function toXMLContact(contact: Contact): XMLContact {
+  let vcardData = contact.vcardData;
+  let etag = contact.etag;
+
+  // Generate vCard on-the-fly for legacy contacts without vCard data
+  if (!vcardData) {
+    const vcardInput: VCardContactInput = {
+      id: contact.id,
+      displayName: contact.displayName || contact.name,
+      givenName: contact.givenName || undefined,
+      familyName: contact.familyName || undefined,
+      nickname: contact.nickname || undefined,
+      organization: contact.organization || undefined,
+      jobTitle: contact.jobTitle || undefined,
+      birthday: contact.birthday || undefined,
+      notes: contact.notes || undefined,
+      emails: contact.emails
+        ? JSON.parse(contact.emails)
+        : contact.email
+          ? [{ type: "HOME", value: contact.email }]
+          : undefined,
+      phoneNumbers: contact.phoneNumbers
+        ? JSON.parse(contact.phoneNumbers)
+        : contact.phone
+          ? [{ type: "CELL", value: contact.phone }]
+          : undefined,
+      addresses: contact.addresses ? JSON.parse(contact.addresses) : undefined,
+      urls: contact.urls ? JSON.parse(contact.urls) : undefined,
+      photoData: contact.photoData || undefined,
+      photoMediaType: contact.photoMediaType || undefined,
+    };
+
+    vcardData = VCardGenerator.generate(vcardInput, "3.0");
+    etag = VCardGenerator.generateEtag(vcardData);
+  }
+
   return {
     id: contact.id,
-    etag: contact.etag,
-    vcardData: contact.vcardData,
+    etag: etag || VCardGenerator.generateEtag(vcardData),
+    vcardData,
     updatedAt: contact.updatedAt.toISOString(),
     createdAt: contact.createdAt.toISOString(),
   };
