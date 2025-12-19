@@ -20,7 +20,11 @@ async function proxyCarddavRequest(c: Context): Promise<Response> {
   const baseUrl = getCarddavServiceUrl();
 
   // Construct the path - keep /carddav prefix as the service expects it
-  const path = c.req.path;
+  // Strip trailing slash to normalize paths (CardDAV clients vary)
+  let path = c.req.path;
+  if (path.length > 1 && path.endsWith("/")) {
+    path = path.slice(0, -1);
+  }
   const url = new URL(path, baseUrl);
 
   // Preserve query params

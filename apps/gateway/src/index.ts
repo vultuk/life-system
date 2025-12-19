@@ -29,8 +29,8 @@ app.get("/health", (c) => {
 
 // CardDAV well-known discovery endpoints (RFC 6764)
 // These must be handled BEFORE other routes and WITHOUT auth
-app.get("/.well-known/carddav", (c) => c.redirect("/carddav/", 301));
-app.on("PROPFIND", "/.well-known/carddav", (c) => c.redirect("/carddav/", 301));
+app.get("/.well-known/carddav", (c) => c.redirect("/carddav", 301));
+app.on("PROPFIND", "/.well-known/carddav", (c) => c.redirect("/carddav", 301));
 
 // CalDAV well-known returns 404 (we don't support calendars)
 app.get("/.well-known/caldav", (c) => c.notFound());
