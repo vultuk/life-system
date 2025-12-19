@@ -12,15 +12,21 @@ const app = new Hono();
 
 // Global middleware
 app.use("*", logger());
-app.use(
-  "*",
-  cors({
+
+// Skip CORS for CardDAV - it needs to handle OPTIONS with DAV headers
+app.use("*", async (c, next) => {
+  // Let CardDAV handle its own OPTIONS requests (needs DAV headers)
+  if (c.req.path.startsWith("/carddav")) {
+    return next();
+  }
+  // Apply CORS for all other routes
+  return cors({
     origin: "*",
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PROPFIND", "REPORT", "HEAD"],
     allowHeaders: ["Content-Type", "Authorization", "Depth", "If-Match", "If-None-Match", "mcp-session-id", "mcp-protocol-version"],
     exposeHeaders: ["mcp-session-id"],
-  })
-);
+  })(c, next);
+});
 
 // Health check
 app.get("/health", (c) => {
