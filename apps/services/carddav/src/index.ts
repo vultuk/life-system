@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { logger } from "hono/logger";
+import { trimTrailingSlash } from "hono/trailing-slash";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { AppError, createApiErrorResponse } from "@life/shared";
 import { basicAuthMiddleware } from "./middleware";
@@ -9,6 +10,9 @@ const app = new Hono();
 
 // Global middleware
 app.use("*", logger());
+
+// Normalize trailing slashes - /carddav/ becomes /carddav
+app.use(trimTrailingSlash());
 
 // Health check (no auth required)
 app.get("/health", (c) => {
