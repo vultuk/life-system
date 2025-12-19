@@ -75,9 +75,9 @@ carddavRoutes.on("PROPFIND", "/", async (c) => {
 });
 
 /**
- * PROPFIND on /addressbooks/ - list all address books
+ * PROPFIND on /addressbooks - list all address books
  */
-carddavRoutes.on("PROPFIND", "/addressbooks/", async (c) => {
+carddavRoutes.on("PROPFIND", "/addressbooks", async (c) => {
   const user = getUser(c);
 
   let addressBooks = await getAddressBooks(user.userId);
@@ -93,9 +93,9 @@ carddavRoutes.on("PROPFIND", "/addressbooks/", async (c) => {
 });
 
 /**
- * PROPFIND on /addressbooks/:categoryId/ - list contacts in an address book
+ * PROPFIND on /addressbooks/:categoryId - list contacts in an address book
  */
-carddavRoutes.on("PROPFIND", "/addressbooks/:categoryId/", async (c) => {
+carddavRoutes.on("PROPFIND", "/addressbooks/:categoryId", async (c) => {
   const user = getUser(c);
   const categoryId = c.req.param("categoryId");
 
@@ -121,7 +121,7 @@ carddavRoutes.on("PROPFIND", "/addressbooks/:categoryId/", async (c) => {
 /**
  * REPORT handler - multiget, sync-collection, query
  */
-carddavRoutes.on("REPORT", "/addressbooks/:categoryId/", async (c) => {
+carddavRoutes.on("REPORT", "/addressbooks/:categoryId", async (c) => {
   const user = getUser(c);
   const categoryId = c.req.param("categoryId");
   const body = await c.req.text();
