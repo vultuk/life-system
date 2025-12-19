@@ -32,6 +32,13 @@ app.get("/health", (c) => {
 app.get("/.well-known/carddav", (c) => c.redirect("/carddav", 301));
 app.on("PROPFIND", "/.well-known/carddav", (c) => c.redirect("/carddav", 301));
 
+// Handle PROPFIND on root - some CardDAV clients query this for discovery
+app.on("PROPFIND", "/", (c) => c.redirect("/carddav", 301));
+
+// Handle /principals/ - redirect to carddav for principal discovery
+app.on("PROPFIND", "/principals/*", (c) => c.redirect("/carddav", 301));
+app.on("PROPFIND", "/principals", (c) => c.redirect("/carddav", 301));
+
 // CalDAV well-known returns 404 (we don't support calendars)
 app.get("/.well-known/caldav", (c) => c.notFound());
 app.on("PROPFIND", "/.well-known/caldav", (c) => c.notFound());
